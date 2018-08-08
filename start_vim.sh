@@ -1,19 +1,18 @@
-#!/bin/bash      
+#!/bin/bash
 #########################################################################
-# File Name: config.sh
+# File Name: start_vim.sh
 # Author: meetbill
 # mail: meetbill@163.com
 # Created Time: Thu 06 Nov 2014 06:31:50 PM CST
-# Updated Time: 2018/03/22 16:24
+# Updated Time: 2018-04-22 14:33
 #########################################################################
-#Define Path    
-VIMRC=~/.vimrc 
+#Define Path
+VIMRC=~/.vimrc
 VIM_FILE=./packages/vim*
 
 function scripts_generic_identifyOs(){
 
     ## determine OS of computer
-
     os=$(uname -a)
     if [[ ${os} == *"Darwin"* ]]; then
       os="Mac"
@@ -30,36 +29,25 @@ function scripts_generic_identifyOs(){
         elif [[ "$(cat /etc/system-release-cpe)" == *"redhat"* ]]; then
             os="Redhat"
         fi
-        return 0
     else
         os="Unrecognised"
         echo "os:${os}"
-        echo "this vim config_server is success !" 
-        cp ./packages/server_vimrc ~/.vimrc
-        exit 0
     fi
+    return 0
 }
-#deine Vim_config     
-function Vim_config ()      
-{   
+#deine Vim_config
+function Vim_config ()
+{
 	clear
-    
+    read -p "Please input your name:(default:meetbill)" AUTHOR
+    [[ -z "$AUTHOR"  ]] && AUTHOR="meetbill"
+    read -p "Please input your E-mail:(default:meetbill@163.com)" MAIL_AUTHOR
+    [[ -z "$MAIL_AUTHOR"  ]] && MAIL_AUTHOR="meetbill@163.com"
+    [[ -d ~/.vim  ]] && rm -rf ~/.vim
 
     if [ `id -u` -eq 0 ];
     then
 	    tar -zxf ${VIM_FILE} -C ~/
-        if [[ "w$os" == "wMac" ]]
-        then
-            read -p "Please input your name:" AUTHOR      
-            sed -i "" "s/Bill/$AUTHOR/g" $VIMRC     
-            read -p "Please input your E-mail:" MAIL_AUTHOR     
-            sed -i "" "s/XXXXXXX@qq.com/$MAIL_AUTHOR/g" $VIMRC     
-        else
-            read -p "Please input your name:" AUTHOR      
-            sed -i "s/Bill/$AUTHOR/g" $VIMRC     
-            read -p "Please input your E-mail:" MAIL_AUTHOR     
-            sed -i "s/XXXXXXX@qq.com/$MAIL_AUTHOR/g" $VIMRC     
-        fi
 	    cd ./packages/
         check_ctags=`ls -l /usr/bin/ | grep ctags|wc -l`
         if [[ "w$check_ctags" == "w0" ]]
@@ -74,26 +62,12 @@ function Vim_config ()
             then
                 echo " " >> ~/.bashrc
                 echo "alias vi='vim'" >> ~/.bashrc
-            fi 
+            fi
             . ~/.bashrc
         fi
-        echo "this vim config is success !" 
-	    exit 0
     else
         chmod -R 777 packages
 	    tar -zxf ${VIM_FILE} -C ~/
-        if [[ "w$os" == "wMac" ]]
-        then
-            read -p "Please input your name:" AUTHOR      
-            sed -i "" "s/Bill/$AUTHOR/g" $VIMRC     
-            read -p "Please input your E-mail:" MAIL_AUTHOR     
-            sed -i "" "s/XXXXXXX@qq.com/$MAIL_AUTHOR/g" $VIMRC     
-        else
-            read -p "Please input your name:" AUTHOR      
-            sed -i "s/Bill/$AUTHOR/g" $VIMRC     
-            read -p "Please input your E-mail:" MAIL_AUTHOR     
-            sed -i "s/XXXXXXX@qq.com/$MAIL_AUTHOR/g" $VIMRC     
-        fi
 	    cd ./packages/
         check_ctags=`ls -l /usr/bin/ | grep ctags|wc -l`
         if [[ "w$check_ctags" == "w0" ]]
@@ -111,14 +85,20 @@ function Vim_config ()
             fi 
             . ~/.bashrc
         fi
-	    echo "this vim config is success !" 
-	    exit 0
     fi
-}      
-          
-          
-clear 
-echo " " 
+    if [[ "w$os" == "wMac" ]]
+    then
+        sed -i "" "s/meetbill/$AUTHOR/g" $VIMRC
+        sed -i "" "s/meetbill@163.com/$MAIL_AUTHOR/g" $VIMRC
+    else
+        sed -i "s/meetbill/$AUTHOR/g" $VIMRC
+        sed -i "s/meetbill@163.com/$MAIL_AUTHOR/g" $VIMRC
+    fi
+    echo "this vim config is success !"
+    exit 0
+}
+clear
+echo " "
 echo -e "    \033[44;37m========================================================================\033[0m" 
 echo -e "    \033[44;33m|------------------------------Description------------------------------\033[0m" 
 echo -e "    \033[44;37m========================================================================\033[0m" 
@@ -139,18 +119,18 @@ echo "OS:"${os}
 echo " "
 PS3="Please input a number":              
   select i in  "Vim_config" "quit"
-do 
-	case $i in       
-	Vim_config )      
-	Vim_config      
+do
+	case $i in
+	Vim_config )
+	Vim_config
 	;;
 	quit)
 	exit $?
 	;;
-	*)      
-	echo      
+	*)
+	echo
 	echo -e "\033[44;37mPlease Insert :Vim_config(1)|Exit(2)\033[0m" 
-	echo      
-	;;      
-	esac      
-done 
+	echo
+	;;
+	esac
+done
